@@ -8,10 +8,12 @@ import { Signupusers } from '../ServiceAPIs/UsersAPIs'; // Import the API functi
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [userName, setName] = useState('');
+  const [userEmail, setEmail] = useState('');
+  const [userPhone, setPhone] = useState('');
+  const [userLocation, setLocation] = useState('');
   const [dob, setDob] = useState(new Date());
-  const [password, setPassword] = useState('');
+  const [userPassword, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [photoUri, setPhotoUri] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -67,33 +69,47 @@ const SignUpScreen = () => {
   };
 
   const handleSubmit = async () => {
-    if (!name || !email || !password || !confirmPassword) {
+    if (!userName || !userEmail || !userPassword || !confirmPassword) {
       Alert.alert('All fields are required');
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (userPassword !== confirmPassword) {
       Alert.alert('Passwords do not match');
       return;
     }
 
     const formattedDate = formatDate(dob);
-
-    const user = {
-      name,
-      email,
-      dateOfBirth: formattedDate,
-      password,
-      profilePicture: photoUri, // Optional: Include photo URI if the backend supports it
+    const formdata = {
+      userName,
+      userEmail,
+      userPassword,
+      userPhone,
+      userLocation,
+      userDateOfBirth: formattedDate,
+      userImage: photoUri, // Optional: Include photo URI if the backend supports it
     };
-
+    
+    // const users = {
+    //     userName: formatDate.userName,
+    //     userEmail: formatDate.userEmail,
+    //     userPassword: formatDate.userPassword,
+    //     userPhone: formatDate.userPhone,
+    //     userLocation: formatDate.userLocation,
+    //     userDateOfBirth: formatDate.userDateOfBirth,
+    //     userImage: formatDate.userImage,
+    // };
+    // console.log(users);
     try {
-      const response = await Signupusers(user);
-      Alert.alert('Sign-up Successful!', `Welcome, ${response.name}`);
-      navigation.navigate('Login'); // Navigate to the login screen
+      console.log('Submitting user:', formdata); // Before API call
+      const response = await Signupusers(formdata);
+      console.log('Received response:', response); // After API call
+      
+      Alert.alert('Sign-up Successful!', `Welcome, ${response.userName}`);
+      navigation.navigate('Login');
     } catch (error) {
-      console.error(error);
-      Alert.alert('Sign-up Failed', error.message);
+      console.error('API Error:', error); // Log the error for detailed debugging
+      Alert.alert('Sign-up Failed', error.message || 'Something went wrong');
     }
   };
 
@@ -119,17 +135,32 @@ const SignUpScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Name"
-            value={name}
+            value={userName}
             onChangeText={setName}
           />
           <TextInput
             style={styles.input}
             placeholder="Email"
             keyboardType="email-address"
-            value={email}
+            value={userEmail}
             onChangeText={setEmail}
           />
-
+          {/* -----------New data----------- */}
+          <TextInput
+            style={styles.input}
+            placeholder="Phone no"
+            keyboardType="number"
+            value={userPhone}
+            onChangeText={setPhone}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Location"
+            keyboardType="Text"
+            value={userLocation}
+            onChangeText={setLocation}
+          />
+          {/* ----------------------- */}
           <TouchableOpacity style={styles.datePickerButton} onPress={() => setShowDatePicker(true)}>
             <Text style={styles.datePickerText}>
               {dob ? `Date of Birth: ${formatDate(dob)}` : 'Select Date of Birth'}
@@ -149,7 +180,7 @@ const SignUpScreen = () => {
             style={styles.input}
             placeholder="Password"
             secureTextEntry
-            value={password}
+            value={userPassword}
             onChangeText={setPassword}
           />
           <TextInput

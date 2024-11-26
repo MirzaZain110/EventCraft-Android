@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput,Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { loginUsers } from '../ServiceAPIs/UsersAPIs'; // Import the API function
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    if (email && password) {
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert('Please enter both email and password.');
+      return;
+    }
+  
+    try {
+      const response = await loginUsers(email, password);
+      console.log('Login successful:', response);
       navigation.navigate('Main');
-    } else {
-      alert('Please enter both email and password');
+    } catch (error) {
+      alert(`Login failed: ${error.message}`);
     }
   };
+  
 
   const handleGoogleLogin = () => {
     alert('Google Login is not yet implemented');
@@ -155,49 +164,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
-
-// import React from 'react';
-// import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-
-// const Login = ({ navigation }) => {
-//   const handleLogin = () => {
-//     // Navigate to the main screen after clicking "Login"
-//     navigation.navigate('Main');
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Login</Text>
-//       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-//         <Text style={styles.buttonText}>Login</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#f8f4ef',
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   button: {
-//     backgroundColor: '#1f1f1f',
-//     paddingVertical: 10,
-//     paddingHorizontal: 20,
-//     borderRadius: 5,
-//   },
-//   buttonText: {
-//     color: 'white',
-//     fontWeight: 'bold',
-//     fontSize: 18,
-//   },
-// });
-
-// export default Login;
